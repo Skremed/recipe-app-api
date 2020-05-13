@@ -26,6 +26,14 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+    def destroy(self, instance, validated_data):
+        """Delete a user and return it"""
+        password = validated_data.pop('password', None)
+        if (instance.check_password(password)):
+            user = get_user_model().objects.get(email=validated_data.get("email"))
+            user.delete()
+        return "User deleted"
+
 
 class AuthTokenSerializer(serializers.Serializer):
     """serializer for the user authentication object"""

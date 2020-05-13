@@ -1,6 +1,7 @@
-from rest_framework import generics, authentication, permissions
+from rest_framework import generics, authentication, permissions, mixins
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+from rest_framework.response import Response
 
 from user.serializers import UserSerializer, AuthTokenSerializer
 
@@ -16,7 +17,7 @@ class CreateTokenView(ObtainAuthToken):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
 
-class ManageUserView(generics.RetrieveUpdateAPIView):
+class ManageUserView(generics.RetrieveUpdateDestroyAPIView):
     """Manage the authenticated user"""
     serializer_class = UserSerializer
     authentication_classes = (authentication.TokenAuthentication,)
@@ -25,3 +26,9 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Retrieve and return authenticated user"""
         return self.request.user
+
+    def destroy(self, request, pk=None, **kwargs):
+        """Disables the User"""
+        request.user.is_active = False
+        request.user.save()
+        return Response(status=204)
