@@ -43,7 +43,8 @@ class IngredientViewSet(viewsets.GenericViewSet,
         """Create a new ingredient"""
         serializer.save(user=self.request.user)
 
-    def delete(self, request):
-         object = Ingredient.get_object(request.data[0]['name'])
-         object.delete()
-         return Response(status=status.HTTP_204_NO_CONTENT)
+    # def delete(self, request):
+    #     print(request.data[0]['name'])
+    #     object = Ingredient.get_object(request.data[0]['name'])
+    #     object.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
