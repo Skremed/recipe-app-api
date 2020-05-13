@@ -55,3 +55,12 @@ class ModeTests(TestCase):
         )
 
         self.assertEqual(str(tag), tag.name)
+
+    def test_ing_str(self):
+        """Test the ingredient string representation"""
+        ing = models.Ingredient.objects.create(
+            user=sample_user(),
+            name='Cucumber'
+        )
+
+        self.assertEqual(str(ing), ing.name)
