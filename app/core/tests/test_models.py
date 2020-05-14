@@ -64,3 +64,14 @@ class ModeTests(TestCase):
         )
 
         self.assertEqual(str(ing), ing.name)
+
+    def test_recipe_str(self):
+        """Test the recipe string repr"""
+        recipe = models.Recipe.objects.create(
+            user=sample_user(),
+            title='Salad',
+            time_minutes=5,
+            price=5.00
+        )
+
+        self.assertEqual(str(recipe), recipe.title)

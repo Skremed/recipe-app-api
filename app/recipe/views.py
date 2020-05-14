@@ -1,8 +1,11 @@
-from rest_framework import viewsets, mixins, generics
+from rest_framework import viewsets, mixins, generics,views, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 
+from django.shortcuts import render
 from core.models import Tag, Ingredient
 
 from recipe import serializers
@@ -29,13 +32,17 @@ class TagViewSet(RecipeAttributeViewSet):
     serializer_class = serializers.TagSerializer
 
 
-class IngredientViewSet(RecipeAttributeViewSet):
+class IngredientViewSet(RecipeAttributeViewSet, views.APIView):
     """Manage ingredients in the Database"""
     queryset = Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
 
-    # def delete(self, request):
-    #     print(request.data[0]['name'])
-    #     object = Ingredient.get_object(request.data[0]['name'])
-    #     object.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
+    @api_view(('GET','DELETE'))
+    def show_one_ing(self, pk):
+        item = Ingredient.objects.filter(pk=pk).first()
+        if self.method == 'GET':
+            serializer = serializers.IngredientSerializer(item)
+            return Response(serializer.data)
+        elif self.method == 'DELETE':
+            Ingredient.objects.filter(pk=pk).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
