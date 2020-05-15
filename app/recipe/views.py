@@ -4,6 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
+from django.shortcuts import get_object_or_404
+
 from core.models import Tag, Ingredient, Recipe
 
 from recipe import serializers
@@ -24,7 +26,8 @@ class RecipeAttributeViewSet(viewsets.GenericViewSet,
         serializer.save(user=self.request.user)
 
 
-class TagViewSet(RecipeAttributeViewSet):
+
+class TagViewSet(RecipeAttributeViewSet, mixins.DestroyModelMixin):
     """Manage tags in the database"""
     queryset = Tag.objects.all()
     serializer_class = serializers.TagSerializer
@@ -35,6 +38,12 @@ class TagViewSet(RecipeAttributeViewSet):
             return self.serializer_class
 
         return self.serializer_class
+
+    def retrieve(self, request, pk=None):
+        queryset = Tag.objects.all()
+        tag = get_object_or_404(queryset, pk=pk)
+        serializer = serializers.TagSerializer(tag)
+        return Response(serializer.data)
 
 
 class IngredientViewSet(RecipeAttributeViewSet, views.APIView):
@@ -69,3 +78,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return serializers.RecipeDetailSerializer
 
         return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Create a new recipe"""
+        serializer.save(user=self.request.user)
