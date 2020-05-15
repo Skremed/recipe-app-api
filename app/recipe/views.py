@@ -1,12 +1,10 @@
-from rest_framework import viewsets, mixins, generics,views, status
+from rest_framework import viewsets, mixins, generics, views, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, renderer_classes
-from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+from rest_framework.decorators import api_view
 
-from django.shortcuts import render
-from core.models import Tag, Ingredient
+from core.models import Tag, Ingredient, Recipe
 
 from recipe import serializers
 
@@ -46,3 +44,14 @@ class IngredientViewSet(RecipeAttributeViewSet, views.APIView):
         elif self.method == 'DELETE':
             Ingredient.objects.filter(pk=pk).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    """Manage recipes in the database"""
+    queryset = Recipe.objects.all()
+    serializer_class = serializers.RecipeSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        """Retrieve the recipes for the authenticated user"""
+        return self.queryset.filter(user=self.request.user)
