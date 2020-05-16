@@ -13,5 +13,7 @@ app_name = 'recipe'
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('ingredients/<int:pk>', views.IngredientViewSet.show_one_ing, name='show_one'),
+    path('ingredients/<int:pk>', 
+          views.IngredientViewSet.show_one_ing,
+          name='show_one'),
 ]

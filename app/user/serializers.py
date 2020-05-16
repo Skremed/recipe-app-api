@@ -30,7 +30,9 @@ class UserSerializer(serializers.ModelSerializer):
         """Delete a user and return it"""
         password = validated_data.pop('password', None)
         if (instance.check_password(password)):
-            user = get_user_model().objects.get(email=validated_data.get("email"))
+            user = get_user_model().objects.get(
+                email=validated_data.get("email")
+            )
             user.delete()
         return "User deleted"
 
